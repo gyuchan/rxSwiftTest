@@ -7,12 +7,31 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var label: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        _ = searchBar.rx
+            .text       //RxCocoa observable property
+            .orEmpty    //non optional
+//            .throttle(0.5, scheduler: MainScheduler.instance)
+            .debounce(0.5, scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .subscribe(onNext: { query in
+                self.label.text = query
+            }, onError: { (error) in
+                print("searchBar error: \(error)")
+            }, onCompleted: {
+
+            }, onDisposed: {
+
+            })
     }
 
     override func didReceiveMemoryWarning() {
